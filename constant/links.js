@@ -6,7 +6,7 @@ export default {
     SIGNUP: "/register",
     LOGIN: "/login",
     CHANGE_PASSWORD: "/changePassword",
-    USER_DETAIL: "/users",
-    USERS: "/deleteUser",
+    USER_DETAIL: "/allUser",
+    DELETE_USERS: "/deleteUser",
   },
 };

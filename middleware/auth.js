@@ -1,5 +1,5 @@
+import { verify } from "jsonwebtoken";
 import { userModel } from "../models";
-import { errorLogger, verifyJWT } from "../utils";
 const { ObjectId } = require("mongodb");
 
 const authentication = async (request, response, next) => {
@@ -9,16 +9,15 @@ const authentication = async (request, response, next) => {
 
     if (authHeader !== undefined) {
       jwtToken = authHeader.split(" ")[1];
-      console.log("jwtToken", jwtToken);
       if (jwtToken === undefined) throw new Error("Invalid token!");
 
-      const data = verifyJWT(jwtToken);
+      const data = verify(jwtToken, "MY_SECRET_TOKEN");
       if (!data)
         response
           .status(401)
           .send({ success: false, message: "Invalid Credentials!" });
 
-      const res = await userModel.findById(data.id);
+      const res = await userModel.findById(data._id);
 
       if (!res)
         throw new Error({ success: false, message: "Invalid Credentials!" });
@@ -31,7 +30,7 @@ const authentication = async (request, response, next) => {
         .send({ success: false, message: "Authorization should be there!" });
     }
   } catch (error) {
-    errorLogger(error.message || error, request.originalUrl);
+    // errorLogger(error.message || error, request.originalUrl);
     response.status(401).send({ success: false, message: error.message });
   }
 };

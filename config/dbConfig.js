@@ -1,10 +1,16 @@
-const mysql = require("mysql");
+// const mysql = require("mysql");
 
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "root",
-  database: "test",
-});
+// const db = mysql.createConnection({
+//   host: "localhost",
+//   user: "root",
+//   password: "root",
+//   database: "test",
+// });
 
-module.exports = db;
+// module.exports = db;
+
+const dbConfig = {
+  URL: "mongodb://localhost:27017/userDB",
+};
+
+module.exports = dbConfig;
