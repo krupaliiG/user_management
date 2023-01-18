@@ -1,4 +1,3 @@
-const dbConfig = require("./config/dbConfig.js");
 const mongoose = require("mongoose");
 const express = require("express");
 var bodyParser = require("body-parser");
@@ -26,21 +25,6 @@ app.use(
 );
 
 app.use(morgan("dev"));
-
-mongoose.Promise = global.Promise;
-
-mongoose
-  .connect(dbConfig.URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    console.log("Successfully connected to the database");
-  })
-  .catch((error) => {
-    console.log("Could not connect to the database. Exiting now...", error);
-    process.exit(1);
-  });
 
 import { userRoute } from "./routes";
 import { INTERNAL_LINKS } from "./constant";

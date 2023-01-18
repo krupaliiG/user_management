@@ -1,6 +1,5 @@
 import { verify } from "jsonwebtoken";
-import { userModel } from "../models";
-const { ObjectId } = require("mongodb");
+import { userService } from "../services"
 
 const authentication = async (request, response, next) => {
   try {
@@ -17,12 +16,12 @@ const authentication = async (request, response, next) => {
           .status(401)
           .send({ success: false, message: "Invalid Credentials!" });
 
-      const res = await userModel.findById(data._id);
+      const res = await userService.findByEmail(data.email)
 
       if (!res)
         throw new Error({ success: false, message: "Invalid Credentials!" });
 
-      request.currentUser = res;
+      request.currentUser = res[0];
       next();
     } else {
       response
@@ -30,7 +29,6 @@ const authentication = async (request, response, next) => {
         .send({ success: false, message: "Authorization should be there!" });
     }
   } catch (error) {
-    // errorLogger(error.message || error, request.originalUrl);
     response.status(401).send({ success: false, message: error.message });
   }
 };
