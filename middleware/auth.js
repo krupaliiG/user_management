@@ -1,11 +1,12 @@
 import { verify } from "jsonwebtoken";
-import { userService } from "../services"
+import { userService } from "../services";
 
 const authentication = async (request, response, next) => {
   try {
     let jwtToken = null;
     const authHeader = request.headers["authorization"];
 
+    console.log("authHeader:::", authHeader);
     if (authHeader !== undefined) {
       jwtToken = authHeader.split(" ")[1];
       if (jwtToken === undefined) throw new Error("Invalid token!");
@@ -16,11 +17,12 @@ const authentication = async (request, response, next) => {
           .status(401)
           .send({ success: false, message: "Invalid Credentials!" });
 
-      const res = await userService.findByEmail(data.email)
+      const res = await userService.findByEmail(data.email);
 
       if (!res)
         throw new Error({ success: false, message: "Invalid Credentials!" });
 
+      console.log("res[0]:::", res[0]);
       request.currentUser = res[0];
       next();
     } else {

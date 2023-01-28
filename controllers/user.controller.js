@@ -2,28 +2,32 @@ import { sign } from "jsonwebtoken";
 import { passwordOp } from "../utils";
 import { userService } from "../services";
 import { userRoute } from "../routes";
+import { sendMail } from "../utils";
+import { v4 as uuidv4 } from "uuid";
 
 const RegisterUser = async (request, response) => {
   try {
-    const { username, email, password } = request.body;
-    const rows = await userService.findByEmail(email)
+    const { emailid, username, password } = request.body;
+    const rows = await userService.findByEmail(emailid);
     if (rows && rows.length) {
       response
         .status(400)
         .send({ success: false, message: "Email Already exists!" });
     } else {
       const hashedPassword = await passwordOp.hashPassword(password);
-      const obj = {
-        username,
-        email,
-        password: hashedPassword,
-      }
-      const data = await userService.insertOne(obj)
-      data && response
-        .status(200)
-        .send({ success: true, message: "Registration Successfull!" });
-    }
+      const obj = { ...request.body, password: hashedPassword };
+      const data = await userService.insertOne(obj);
 
+      let subject = "Welcome On Board!";
+      let html = `<p>Welcome <strong>${username}</strong></p></br>
+      <p>Your Password Is:<strong>${password}</strong></p>`;
+      sendMail(emailid, subject, html);
+
+      data &&
+        response
+          .status(200)
+          .send({ success: true, message: "Registration Successfull!" });
+    }
   } catch (error) {
     response.status(400).send({ success: false, message: error.message });
   }
@@ -31,9 +35,9 @@ const RegisterUser = async (request, response) => {
 
 const LoginUser = async (request, response) => {
   try {
-    const { email, password } = request.body;
-    const dbUser = await userService.findByEmail(email)
-    if (!dbUser) {
+    const { emailid, password } = request.body;
+    const dbUser = await userService.findByEmail(emailid);
+    if (!dbUser || dbUser.length == 0) {
       response.status(400).send({ success: false, message: "Invalid User" });
     } else {
       const isPasswordMatched = await passwordOp.comparePassword(
@@ -42,13 +46,17 @@ const LoginUser = async (request, response) => {
       );
       if (isPasswordMatched) {
         const data = await userService.find({
-          email: email,
+          email: emailid,
           password: dbUser[0].password,
         });
         if (data) {
-          const payload = { email: email };
+          const payload = { email: emailid };
           const jwtToken = await sign(payload, "MY_SECRET_TOKEN");
-          response.status(200).send({ success: true, message: "Login Successfully!", data: jwtToken });
+          response.status(200).send({
+            success: true,
+            message: "Login Successfully!",
+            data: jwtToken,
+          });
         } else {
           response
             .status(400)
@@ -67,11 +75,13 @@ const LoginUser = async (request, response) => {
 
 const ChangePassword = async (request, response) => {
   try {
-    const { email } = request.currentUser;
+    console.log("request.currentUser::", request.currentUser);
+    const { emailid } = request.currentUser;
+    console.log("email:::", emailid);
     const { oldPassword, newPassword } = request.body;
     let updatePassword;
 
-    const dbUser = await userService.findByEmail(email);
+    const dbUser = await userService.findByEmail(emailid);
 
     if (!dbUser) {
       response.status(400).send({ success: false, message: "Invalid User" });
@@ -87,7 +97,7 @@ const ChangePassword = async (request, response) => {
         throw new Error("You Can't Use Your Old password as new Password!");
 
       const hashed = await passwordOp.hashPassword(newPassword);
-      const update = { email, password: hashed };
+      const update = { emailid, password: hashed };
 
       updatePassword = await userService.findByEmailAndUpdate(update);
       if (!updatePassword) throw new Error("Error While Updating Password");
@@ -102,24 +112,42 @@ const ChangePassword = async (request, response) => {
   }
 };
 
-const ListUser = async (request, response) => {
+const forgetPassword = async (request, response) => {
   try {
-    let data = await userService.findAll();
-    response.status(200).send({ success: true, data });
-  } catch (error) {
-    response.status(400).send({ success: false, message: error.message });
-  }
-};
+    const { emailid } = request.body;
+    let token;
+    const dbUser = await userService.findByEmail(emailid);
+    console.log("dbUser:::", dbUser);
+    if (!dbUser || dbUser.length == 0) {
+      response.status(400).send({
+        success: false,
+        message: "This User doesn't exists! In stead try Registering.",
+      });
+    }
+    if (dbUser[0].resettoken != null && dbUser[0].resettoken != "") {
+      token = dbUser[0].resettoken;
+    } else {
+      token = uuidv4();
+    }
+    let obj = {
+      emailid,
+      token,
+    };
+    console.log("obj::", obj);
+    console.log("token::", token);
 
-const deleteUser = async (request, response) => {
-  try {
-    const { id } = request.query;
-    if (!id) throw new Error("Please pass valid Id to delete!");
+    const data = await userService.findByEmailAndUpdateToken(obj);
+    const link = `${process.env.BASE_URL}/password-reset/${dbUser[0].id}/${token}`;
+    console.log("link:::", link);
+    let html = `<p><b>Password reset link: </b></p></br>
+            <p>Please use below link to reset your password.</p></br>
+            <p>${link}</p>`;
+    await sendMail(dbUser[0].emailid, "Password reset", html);
 
-    const data = await userService.deleteOne(id);
-    response
-      .status(200)
-      .send({ success: true, message: "User deleted Successfullly!" });
+    response.status(200).send({
+      success: true,
+      message: "Password reset link sent to your email account!",
+    });
   } catch (error) {
     response.status(400).send({ success: false, message: error.message });
   }
@@ -129,6 +157,5 @@ export default {
   RegisterUser,
   LoginUser,
   ChangePassword,
-  ListUser,
-  deleteUser,
+  forgetPassword,
 };

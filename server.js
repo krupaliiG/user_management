@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const express = require("express");
 var bodyParser = require("body-parser");
+require("dotenv").config({ path: ".env" });
 const app = express();
 import morgan from "morgan";
 
@@ -26,10 +27,11 @@ app.use(
 
 app.use(morgan("dev"));
 
-import { userRoute } from "./routes";
+import { userRoute, roleRoute } from "./routes";
 import { INTERNAL_LINKS } from "./constant";
 
 app.use(INTERNAL_LINKS.USER.BASE_URL, userRoute);
+app.use(INTERNAL_LINKS.ROLE.BASE_URL, roleRoute);
 
 app.listen(3000, () => {
   console.log("Server started at port 3000");
