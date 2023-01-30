@@ -53,9 +53,44 @@ function forgetPasswordSchema(req, res, next) {
   validateRequest(req, res, next, schema);
 }
 
+function createProjectSchema(req, res, next) {
+  const schema = Joi.object({
+    client_id: Joi.number().required(),
+    projectname: Joi.string().required(),
+    estimate_hours: Joi.number().required(),
+    actual_hour: Joi.number().required(),
+    billable_hour: Joi.number().required(),
+    status: Joi.number().required(),
+  }).unknown(true);
+  validateRequest(req, res, next, schema);
+}
+
+function createTaskSchema(req, res, next) {
+  const schema = Joi.object({
+    project_id: Joi.number().required(),
+    taskname: Joi.string().required(),
+    description: Joi.string().required(),
+    status: Joi.number().required(),
+  }).unknown(true);
+  validateRequest(req, res, next, schema);
+}
+
+function createIssueSchema(req, res, next) {
+  const schema = Joi.object({
+    task_id: Joi.number().required(),
+    issue: Joi.string().required(),
+    description: Joi.string().required(),
+    status: Joi.number().required(),
+  }).unknown(true);
+  validateRequest(req, res, next, schema);
+}
+
 export default {
   registerSchema,
   createUserSchema,
   loginSchema,
   forgetPasswordSchema,
+  createProjectSchema,
+  createTaskSchema,
+  createIssueSchema,
 };

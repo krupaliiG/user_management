@@ -52,7 +52,6 @@ const insertOne = async (data) => {
     country,
     zip,
   ]);
-  console.log("rows:::", rows);
   return rows;
 };
 
@@ -75,7 +74,6 @@ const findAll = async (Query) => {
   const sql = `select * from user where id is not null ${
     username ? `and username=${username}` : ""
   } ${email ? `and email=${email}` : ""} ${id ? ` and id=${id}` : ""};`;
-  console.log("sql:::", sql);
   const [rows, fields] = await pool.query(sql);
   return rows;
 };

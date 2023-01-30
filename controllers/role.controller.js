@@ -1,4 +1,3 @@
-import { now } from "mongoose";
 import { roleService } from "../services";
 import { passwordOp } from "../utils";
 import { sendMail, randomPass } from "../utils";
@@ -6,7 +5,6 @@ import { sendMail, randomPass } from "../utils";
 const addUpdateUser = async (request, response) => {
   try {
     const { id, emailid, username } = request.body;
-    console.log("request.currentUser:::", request.currentUser);
     if (id) {
       const checkExistingUser = await roleService.findByEmail(emailid);
       if (!checkExistingUser) throw new Error(`User not exist.`);
@@ -18,7 +16,6 @@ const addUpdateUser = async (request, response) => {
           updated_by: request.currentUser.id,
           updated_at: now(),
         };
-      // console.log("data here::", data);
       const updateUser = await roleService.findByEmailAndUpdate(filter, data);
       data &&
         response
@@ -34,7 +31,6 @@ const addUpdateUser = async (request, response) => {
         });
       } else {
         const password = randomPass[0];
-        console.log("password::", password);
         const hashedPassword = await passwordOp.hashPassword(password);
         const obj = {
           ...request.body,
@@ -57,7 +53,6 @@ const addUpdateUser = async (request, response) => {
       }
     }
   } catch (error) {
-    console.log("error:::", error);
     response.status(400).send({ success: false, message: error.message });
   }
 };

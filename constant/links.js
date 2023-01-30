@@ -1,17 +1,35 @@
 export default {
   BASE_API_URL: "/api/v1/",
 
-  ROLE: {
-    BASE_URL: "/api/v1/role",
-    CREATE_USER: "/addUpdateUser",
-    GET_USER: "/getAllUser",
-    DELETE_USER: "/deleteUser",
-  },
   USER: {
     BASE_URL: "/api/v1/users",
     SIGNUP: "/register",
     LOGIN: "/login",
     CHANGE_PASSWORD: "/changePassword",
     FORGET_PASSWORD: "/forgetPassword",
+  },
+  ROLE: {
+    BASE_URL: "/api/v1/role",
+    CREATE_USER: "/addUpdateUser",
+    GET_USER: "/getAllUser",
+    DELETE_USER: "/deleteUser",
+  },
+  PROJECT: {
+    BASE_URL: "/api/v1/project",
+    CREATE_PROJECT: "/addUpdateProject",
+    GET_PROJECT: "/getAllProjects",
+    DELETE_PROJECT: "/deleteProject",
+  },
+  TASK: {
+    BASE_URL: "/api/v1/task",
+    CREATE_TASK: "/addUpdateTask",
+    GET_TASK: "/getAllTasks",
+    DELETE_TASK: "/deleteTask",
+  },
+  ISSUE: {
+    BASE_URL: "/api/v1/issue",
+    CREATE_ISSUE: "/addUpdateIssue",
+    GET_ISSUE: "/getAllIssues",
+    DELETE_ISSUE: "/deleteIssue",
   },
 };

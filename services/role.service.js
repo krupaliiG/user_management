@@ -76,9 +76,7 @@ const findByEmailAndUpdate = async (filter, data) => {
     country,
     zip,
     updated_by,
-    updated_at,
   } = data;
-  console.log("data:::", data);
   const sql = `update user set 
    ${first_name ? `first_name ='${first_name}',` : ""}
    ${last_name ? `last_name ='${last_name}',` : ""}
@@ -92,14 +90,13 @@ const findByEmailAndUpdate = async (filter, data) => {
    ${state ? `state = '${state}',` : ""}
    ${country ? `country = '${state}',` : ""}
    ${zip ? `zip = '${zip}'` : ""}
+   updated_at = NOW()
    where id =${id} ;`;
-  console.log("sql:::", sql);
   const [rows, fields] = await pool.query(sql);
   return rows;
 };
 
 const findAll = async (Query) => {
-  console.log("Query:::", Query);
   const { id, username, email } = Query;
   const sql = `select * from user where id is not null ${
     username ? `and username="${username}"` : ""

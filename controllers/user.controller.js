@@ -75,9 +75,7 @@ const LoginUser = async (request, response) => {
 
 const ChangePassword = async (request, response) => {
   try {
-    console.log("request.currentUser::", request.currentUser);
     const { emailid } = request.currentUser;
-    console.log("email:::", emailid);
     const { oldPassword, newPassword } = request.body;
     let updatePassword;
 
@@ -117,7 +115,6 @@ const forgetPassword = async (request, response) => {
     const { emailid } = request.body;
     let token;
     const dbUser = await userService.findByEmail(emailid);
-    console.log("dbUser:::", dbUser);
     if (!dbUser || dbUser.length == 0) {
       response.status(400).send({
         success: false,
@@ -133,12 +130,9 @@ const forgetPassword = async (request, response) => {
       emailid,
       token,
     };
-    console.log("obj::", obj);
-    console.log("token::", token);
 
     const data = await userService.findByEmailAndUpdateToken(obj);
     const link = `${process.env.BASE_URL}/password-reset/${dbUser[0].id}/${token}`;
-    console.log("link:::", link);
     let html = `<p><b>Password reset link: </b></p></br>
             <p>Please use below link to reset your password.</p></br>
             <p>${link}</p>`;
