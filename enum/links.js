@@ -19,17 +19,21 @@ export default {
     CREATE_PROJECT: "/addUpdateProject",
     GET_PROJECT: "/getAllProjects",
     DELETE_PROJECT: "/deleteProject",
+    ASSIGN_TEAM_TO_PROJECT: "/assignTeamToProject",
+    UPDATE_HOUR: "/updateHour",
   },
   TASK: {
     BASE_URL: "/api/v1/task",
     CREATE_TASK: "/addUpdateTask",
     GET_TASK: "/getAllTasks",
     DELETE_TASK: "/deleteTask",
+    ASSIGN_TEAM_TO_TASK: "/assignTeamToTask",
   },
   ISSUE: {
     BASE_URL: "/api/v1/issue",
     CREATE_ISSUE: "/addUpdateIssue",
     GET_ISSUE: "/getAllIssues",
     DELETE_ISSUE: "/deleteIssue",
+    ASSIGN_TEAM_TO_ISSUE: "/assignTeamToIssue",
   },
 };

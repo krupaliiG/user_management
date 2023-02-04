@@ -35,10 +35,11 @@ const findByIdAndUpdate = async (filter, data) => {
   const sql = `update issues set 
    ${task_id ? `task_id ='${task_id}',` : ""}
    ${issue ? `issue ='${issue}',` : ""}
-   ${description ? `description ='${description}',` : ""}
+   ${description ? `description ="${description}",` : ""}
    ${status ? `status = '${status}',` : ""}
    updated_at = NOW()
    where id =${id} ;`;
+  console.log("sql:::", sql);
   const [rows, fields] = await pool.query(sql);
   return rows;
 };

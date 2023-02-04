@@ -1,8 +1,16 @@
-import { taskService, issueService } from "../services";
+import {
+  taskService,
+  issueService,
+  issueAssignService,
+  taskAssignService,
+  issueHistoryService,
+} from "../services";
 
 const addUpdateIssue = async (request, response) => {
   try {
-    const { id, task_id, issue } = request.body;
+    const { id, task_id, team_id, status } = request.body;
+    console.log("team_id:::", team_id);
+
     if (id) {
       const checkExistingIssue = await issueService.findById(id);
       if (checkExistingIssue && checkExistingIssue.length === 0)
@@ -15,11 +23,25 @@ const addUpdateIssue = async (request, response) => {
           ...request.body,
           updated_by: request.currentUser.id,
         };
+
+      if (checkExistingIssue[0].status !== status) {
+        console.log("here::::");
+        console.log("status::::", status);
+
+        const obj = {
+          issue_id: checkExistingIssue[0].id,
+          user_id: request.currentUser.id,
+          status,
+        };
+        const addIssueHistory = await issueHistoryService.insertOne(obj);
+        console.log("addIssueHistory:::", addIssueHistory);
+      }
+
       const updateTask = await issueService.findByIdAndUpdate(filter, data);
       updateTask &&
         response
           .status(200)
-          .send({ success: true, message: "Task updated successfully!" });
+          .send({ success: true, message: "Issue updated successfully!" });
     } else {
       const rows = await taskService.findById(task_id);
       if (rows && rows.length === 0) {
@@ -34,13 +56,41 @@ const addUpdateIssue = async (request, response) => {
           created_by: request.currentUser.id,
         };
         const data = await issueService.insertOne(obj);
+        let issue_id = data.insertId;
 
-        response
-          .status(200)
-          .send({ success: true, message: "Issue created successfully!" });
+        if (data.affectedRows === 1 && data.insertId) {
+          const obj = {
+            issue_id,
+            user_id: request.currentUser.id,
+            status,
+          };
+          const addIssueHistory = await issueHistoryService.insertOne(obj);
+          console.log("addIssueHistory:::", addIssueHistory);
+        }
+
+        if (
+          data.affectedRows === 1 &&
+          data.insertId &&
+          team_id &&
+          team_id.length > 0
+        ) {
+          for (const id of team_id) {
+            const obj = {
+              issue_id,
+              user_id: id,
+            };
+            const data = await issueAssignService.insertOne(obj);
+          }
+        }
+
+        data &&
+          response
+            .status(200)
+            .send({ success: true, message: "Issue created successfully!" });
       }
     }
   } catch (error) {
+    console.log(error);
     response.status(400).send({ success: false, message: error.message });
   }
 };
@@ -73,8 +123,36 @@ const deleteIssue = async (request, response) => {
   }
 };
 
+const assignTeamToIssue = async (request, response) => {
+  try {
+    const { issue_id, team_id } = request.body;
+    const checkExistingIssue = await issueService.findById(issue_id);
+    if (checkExistingIssue && checkExistingIssue.length === 0)
+      throw new Error(`Project does not exist.`);
+
+    if (team_id && team_id.length > 0) {
+      for (const id of team_id) {
+        const obj = {
+          project_id,
+          user_id: id,
+        };
+        const data = await taskAssignService.insertOne(obj);
+      }
+    } else {
+      throw new Error("Select At least one team member to assign to Project.");
+    }
+
+    response
+      .status(200)
+      .send({ success: true, message: "Team Assign to Project Successfully!" });
+  } catch (error) {
+    response.status(400).send({ success: false, message: error.message });
+  }
+};
+
 export default {
   addUpdateIssue,
   getAllIssues,
   deleteIssue,
+  assignTeamToIssue,
 };

@@ -19,4 +19,9 @@ export default express
     INTERNAL_LINKS.TASK.DELETE_TASK,
     authentication,
     taskController.deleteTask
+  )
+  .post(
+    INTERNAL_LINKS.TASK.ASSIGN_TEAM_TO_TASK,
+    authentication,
+    taskController.assignTeamToTask
   );

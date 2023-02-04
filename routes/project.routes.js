@@ -23,4 +23,14 @@ export default express
     INTERNAL_LINKS.PROJECT.DELETE_PROJECT,
     authentication,
     projectController.deleteProject
+  )
+  .post(
+    INTERNAL_LINKS.PROJECT.ASSIGN_TEAM_TO_PROJECT,
+    authentication,
+    projectController.assignTeamToProject
+  )
+  .post(
+    INTERNAL_LINKS.PROJECT.UPDATE_HOUR,
+    authentication,
+    projectController.updateHour
   );
