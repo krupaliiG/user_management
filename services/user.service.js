@@ -1,4 +1,5 @@
 import password from "../utils/password";
+import { Constants } from "../enum";
 
 const pool = require("../config/dbConfig");
 
@@ -7,6 +8,7 @@ const findByEmail = async (email) => {
     "select * from user where emailid = ?",
     [email]
   );
+  console.log("rows::", rows);
   return rows;
 };
 
@@ -57,15 +59,34 @@ const insertOne = async (data) => {
 
 const findByEmailAndUpdate = async (update) => {
   let { email, password } = update;
+
   const sql = "UPDATE user SET password = ? WHERE emailid = ?;";
   const [rows, fields] = await pool.query(sql, [password, email]);
   return rows;
 };
 
-const findByEmailAndUpdateToken = async (update) => {
-  let { emailid, token } = update;
-  const sql = "UPDATE user SET resettoken = ? WHERE emailid = ?;";
-  const [rows, fields] = await pool.query(sql, [token, emailid]);
+const findByEmailAndUpdateToken = async (update, filter) => {
+  console.log("Constant.user_keys:::", Constants.user_keys);
+  // let user_keys = {
+  //   token: "resettoken",
+  //   password: "password",
+  //   email: "emailid",
+  // };
+  let sql = "UPDATE user SET ";
+  const updateFields = Object.keys(update),
+    filterFields = Object.keys(filter);
+  let datatoSend = [];
+  for (const key of updateFields) {
+    sql += `${user_keys[key]} = ? `;
+    datatoSend.push(update[key]);
+  }
+  sql += filterFields.length ? " WHERE " : "";
+  for (const key of filterFields) {
+    sql += `${user_keys[key]} = ? `;
+    datatoSend.push(filter[key]);
+  }
+  console.log("sql,", sql, datatoSend);
+  const [rows, fields] = await pool.query(sql, datatoSend);
   return rows;
 };
 

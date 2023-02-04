@@ -1,6 +1,6 @@
 import express from "express";
 
-import { INTERNAL_LINKS } from "../constant";
+import { INTERNAL_LINKS } from "../enum";
 import { issueController } from "../controllers";
 import { authentication } from "../middleware";
 import { validationSchema } from "../joiSchema";

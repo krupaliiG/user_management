@@ -33,7 +33,7 @@ import {
   taskRoute,
   issueRoute,
 } from "./routes";
-import { INTERNAL_LINKS } from "./constant";
+import { INTERNAL_LINKS } from "./enum";
 
 app.use(INTERNAL_LINKS.USER.BASE_URL, userRoute);
 app.use(INTERNAL_LINKS.ROLE.BASE_URL, roleRoute);

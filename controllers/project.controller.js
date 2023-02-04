@@ -1,8 +1,8 @@
-import { projectService } from "../services";
+import { projectService, projectAssignService } from "../services";
 
 const addUpdateProject = async (request, response) => {
   try {
-    const { id, projectname } = request.body;
+    const { id, projectname, team_id } = request.body;
     if (id) {
       const checkExistingProject = await projectService.findByName(projectname);
       if (checkExistingProject && checkExistingProject.length === 0)
@@ -36,10 +36,26 @@ const addUpdateProject = async (request, response) => {
           created_by: request.currentUser.id,
         };
         const data = await projectService.insertOne(obj);
+        let project_id = data.insertId;
+        if (
+          data.affectedRows === 1 &&
+          data.insertId &&
+          team_id &&
+          team_id.length > 0
+        ) {
+          for (const id of team_id) {
+            const obj = {
+              project_id,
+              user_id: id,
+            };
+            const data = await projectAssignService.insertOne(obj);
+          }
+        }
 
-        response
-          .status(200)
-          .send({ success: true, message: "Project created successfully!" });
+        data &&
+          response
+            .status(200)
+            .send({ success: true, message: "Project created successfully!" });
       }
     }
   } catch (error) {

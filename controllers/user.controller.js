@@ -112,9 +112,11 @@ const ChangePassword = async (request, response) => {
 
 const forgetPassword = async (request, response) => {
   try {
-    const { emailid } = request.body;
+    console.log(request.body);
+    const { email } = request.body;
     let token;
-    const dbUser = await userService.findByEmail(emailid);
+    const dbUser = await userService.findByEmail(email);
+    console.log("dbUser:::", dbUser);
     if (!dbUser || dbUser.length == 0) {
       response.status(400).send({
         success: false,
@@ -126,12 +128,14 @@ const forgetPassword = async (request, response) => {
     } else {
       token = uuidv4();
     }
-    let obj = {
-      emailid,
-      token,
-    };
+    let update = {
+        token,
+      },
+      filter = {
+        email,
+      };
 
-    const data = await userService.findByEmailAndUpdateToken(obj);
+    const data = await userService.findByEmailAndUpdateToken(update, filter);
     const link = `${process.env.BASE_URL}/password-reset/${dbUser[0].id}/${token}`;
     let html = `<p><b>Password reset link: </b></p></br>
             <p>Please use below link to reset your password.</p></br>
