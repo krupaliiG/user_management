@@ -32,5 +32,5 @@ export default express
   .post(
     INTERNAL_LINKS.PROJECT.UPDATE_HOUR,
     authentication,
-    projectController.updateHour
+    projectController.updateProjectHour
   );

@@ -19,11 +19,9 @@ const findOne = async (Query) => {
 };
 
 const findOneAndUpdate = async (filter, hour) => {
-  const { project_id, modal, user_id } = filter;
-  const tableName = Constants[modal];
-  console.log("tableName", tableName);
-  const sql = `UPDATE ${tableName} SET hour = ? WHERE project_id = ? and user_id = ?;`;
-  const [rows, fields] = await pool.query(sql, [project_id, user_id, hour]);
+  const { project_id, user_id } = filter;
+  const sql = `UPDATE project_assign SET hour = ? WHERE project_id = ? and user_id = ?;`;
+  const [rows, fields] = await pool.query(sql, [hour, project_id, user_id]);
   return rows;
 };
 

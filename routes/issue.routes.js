@@ -23,4 +23,9 @@ export default express
     INTERNAL_LINKS.ISSUE.DELETE_ISSUE,
     authentication,
     issueController.deleteIssue
+  )
+  .post(
+    INTERNAL_LINKS.ISSUE.UPDATE_HOUR,
+    authentication,
+    issueController.updateIssueHour
   );

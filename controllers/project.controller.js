@@ -149,12 +149,12 @@ const assignTeamToProject = async (request, response) => {
   }
 };
 
-const updateHour = async (request, response) => {
+const updateProjectHour = async (request, response) => {
   try {
-    const { project_id, hour, modal } = request.body;
+    const { project_id, hour } = request.body;
+    console.log("request.currentUser:::", request.currentUser);
     let filter = {
       project_id,
-      modal,
       user_id: request.currentUser.id,
     };
 
@@ -163,15 +163,12 @@ const updateHour = async (request, response) => {
       throw new Error(`Project With currentUser Doen't exist!`);
     console.log("checkExistingProject:::", checkExistingProject);
 
-    let update = {
-      ...request.body,
-      updated_by: request.currentUser.id,
-    };
-
     const updateHours = await projectAssignService.findOneAndUpdate(
       filter,
       hour
     );
+
+    console.log("updateHours:::", updateHours);
 
     updateHours.affectedRows === 1 &&
       response.status(200).send({
@@ -188,5 +185,5 @@ export default {
   getAllProjects,
   deleteProject,
   assignTeamToProject,
-  updateHour,
+  updateProjectHour,
 };

@@ -24,4 +24,9 @@ export default express
     INTERNAL_LINKS.TASK.ASSIGN_TEAM_TO_TASK,
     authentication,
     taskController.assignTeamToTask
+  )
+  .post(
+    INTERNAL_LINKS.TASK.UPDATE_HOUR,
+    authentication,
+    taskController.updateTaskHour
   );

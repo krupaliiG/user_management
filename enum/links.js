@@ -28,6 +28,7 @@ export default {
     GET_TASK: "/getAllTasks",
     DELETE_TASK: "/deleteTask",
     ASSIGN_TEAM_TO_TASK: "/assignTeamToTask",
+    UPDATE_HOUR: "/updateHour",
   },
   ISSUE: {
     BASE_URL: "/api/v1/issue",
@@ -35,5 +36,6 @@ export default {
     GET_ISSUE: "/getAllIssues",
     DELETE_ISSUE: "/deleteIssue",
     ASSIGN_TEAM_TO_ISSUE: "/assignTeamToIssue",
+    UPDATE_HOUR: "/updateHour",
   },
 };

@@ -150,9 +150,38 @@ const assignTeamToIssue = async (request, response) => {
   }
 };
 
+const updateIssueHour = async (request, response) => {
+  try {
+    const { issue_id, hour } = request.body;
+    console.log("request.currentUser:::", request.currentUser);
+    let filter = {
+      issue_id,
+      user_id: request.currentUser.id,
+    };
+
+    const checkExistingIssue = await issueAssignService.findOne(filter);
+    if (checkExistingIssue && checkExistingIssue.length === 0)
+      throw new Error(`Issue With currentUser Doen't exist!`);
+    console.log("checkExistingIssue:::", checkExistingIssue);
+
+    const updateHours = await issueAssignService.findOneAndUpdate(filter, hour);
+
+    console.log("updateHours:::", updateHours);
+
+    updateHours.affectedRows === 1 &&
+      response.status(200).send({
+        success: true,
+        message: "Hours updated for Issue successfully!",
+      });
+  } catch (error) {
+    response.status(400).send({ success: false, message: error.message });
+  }
+};
+
 export default {
   addUpdateIssue,
   getAllIssues,
   deleteIssue,
   assignTeamToIssue,
+  updateIssueHour,
 };

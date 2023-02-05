@@ -148,9 +148,38 @@ const assignTeamToTask = async (request, response) => {
   }
 };
 
+const updateTaskHour = async (request, response) => {
+  try {
+    const { task_id, hour } = request.body;
+    console.log("request.currentUser:::", request.currentUser);
+    let filter = {
+      task_id,
+      user_id: request.currentUser.id,
+    };
+
+    const checkExistingTask = await taskAssignService.findOne(filter);
+    if (checkExistingTask && checkExistingTask.length === 0)
+      throw new Error(`Task With currentUser Doen't exist!`);
+    console.log("checkExistingProject:::", checkExistingTask);
+
+    const updateHours = await taskAssignService.findOneAndUpdate(filter, hour);
+
+    console.log("updateHours:::", updateHours);
+
+    updateHours.affectedRows === 1 &&
+      response.status(200).send({
+        success: true,
+        message: "Hours updated for Task successfully!",
+      });
+  } catch (error) {
+    response.status(400).send({ success: false, message: error.message });
+  }
+};
+
 export default {
   addUpdateTask,
   getAllTasks,
   deleteTask,
   assignTeamToTask,
+  updateTaskHour,
 };
