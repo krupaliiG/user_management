@@ -48,7 +48,7 @@ function loginSchema(req, res, next) {
 
 function forgetPasswordSchema(req, res, next) {
   const schema = Joi.object({
-    email: Joi.string().required(),
+    emailid: Joi.string().required(),
   });
   validateRequest(req, res, next, schema);
 }
@@ -82,6 +82,7 @@ function createIssueSchema(req, res, next) {
     description: Joi.string().required(),
     status: Joi.number().required(),
   }).unknown(true);
+  console;
   validateRequest(req, res, next, schema);
 }
 

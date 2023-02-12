@@ -3,20 +3,20 @@ import { Constants } from "../enum";
 
 const pool = require("../config/dbConfig");
 
-const findByEmail = async (email) => {
+const findByEmail = async (emailid) => {
   const [rows, fields] = await pool.query(
     "select * from user where emailid = ?",
-    [email]
+    [emailid]
   );
   console.log("rows::", rows);
   return rows;
 };
 
 const find = async (body) => {
-  const { email, password } = body;
+  const { emailid, password } = body;
   const [rows, fields] = await pool.query(
     "select * from user where emailid = ? and password = ?",
-    [email, password]
+    [emailid, password]
   );
   return rows;
 };
@@ -57,32 +57,33 @@ const insertOne = async (data) => {
   return rows;
 };
 
-const findByEmailAndUpdate = async (update) => {
-  let { email, password } = update;
+const findByEmailAndUpdate = async (filter, update) => {
+  console.log("update:::", update);
+  console.log("filter:::", filter);
 
-  const sql = "UPDATE user SET password = ? WHERE emailid = ?;";
-  const [rows, fields] = await pool.query(sql, [password, email]);
-  return rows;
-};
+  console.log(Object.keys(update).length);
 
-const findByEmailAndUpdateToken = async (update, filter) => {
-  console.log("Constant.user_keys:::", Constants.user_keys);
-  // let user_keys = {
-  //   token: "resettoken",
-  //   password: "password",
-  //   email: "emailid",
-  // };
   let sql = "UPDATE user SET ";
   const updateFields = Object.keys(update),
     filterFields = Object.keys(filter);
-  let datatoSend = [];
+
+  console.log("updateFields:::", updateFields);
+  console.log("filterFields:::", filterFields);
+
+  let datatoSend = [],
+    i = 0;
   for (const key of updateFields) {
-    sql += `${user_keys[key]} = ? `;
+    i += 1;
+    sql += `${Constants.user_keys[key]} = ? `;
+    if (i < Object.keys(update).length) {
+      sql += `,`;
+    }
+    // console.log("key:::", key);
     datatoSend.push(update[key]);
   }
   sql += filterFields.length ? " WHERE " : "";
   for (const key of filterFields) {
-    sql += `${user_keys[key]} = ? `;
+    sql += `${Constants.user_keys[key]} = ? `;
     datatoSend.push(filter[key]);
   }
   console.log("sql,", sql, datatoSend);
@@ -110,7 +111,6 @@ export default {
   find,
   insertOne,
   findByEmailAndUpdate,
-  findByEmailAndUpdateToken,
   findAll,
   deleteOne,
 };

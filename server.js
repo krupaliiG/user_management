@@ -32,6 +32,7 @@ import {
   projectRoute,
   taskRoute,
   issueRoute,
+  mediaRoute,
 } from "./routes";
 import { INTERNAL_LINKS } from "./enum";
 
@@ -40,6 +41,7 @@ app.use(INTERNAL_LINKS.ROLE.BASE_URL, roleRoute);
 app.use(INTERNAL_LINKS.PROJECT.BASE_URL, projectRoute);
 app.use(INTERNAL_LINKS.TASK.BASE_URL, taskRoute);
 app.use(INTERNAL_LINKS.ISSUE.BASE_URL, issueRoute);
+app.use(INTERNAL_LINKS.MEDIA.BASE_URL, mediaRoute);
 
 app.listen(3000, () => {
   console.log("Server started at port 3000");

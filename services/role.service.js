@@ -1,121 +1,60 @@
-import password from "../utils/password";
-
 const pool = require("../config/dbConfig");
 
-const findByEmail = async (email) => {
-  const [rows, fields] = await pool.query(
-    "select * from user where emailid = ?",
-    [email]
-  );
-  return rows;
-};
-
-const find = async (body) => {
-  const { emailid, password } = body;
-  const [rows, fields] = await pool.query(
-    "select * from user where emailid = ? and password = ?",
-    [email, password]
-  );
-  return rows;
-};
-
-const insertOne = async (data) => {
-  const {
-    first_name,
-    last_name,
-    username,
-    emailid,
-    password,
-    role_id,
-    company_name,
-    phone,
-    address,
-    city,
-    state,
-    country,
-    zip,
-    created_by,
-    updated_by,
-  } = data;
-  const sql =
-    "insert into user (first_name,last_name,username,emailid,password,role_id,company_name,phone,address,city,state,country,zip,created_by,updated_by) values (?, ?,?, ?,?,?,?,?,?,?,?,?,?,?,?);";
-  const [rows, fields] = await pool.query(sql, [
-    first_name,
-    last_name,
-    username,
-    emailid,
-    password,
-    role_id,
-    company_name,
-    phone,
-    address,
-    city,
-    state,
-    country,
-    zip,
-    created_by,
-    updated_by,
+const findByName = async (name) => {
+  const [rows, fields] = await pool.query("select * from role where name = ?", [
+    name,
   ]);
   return rows;
 };
 
-const findByEmailAndUpdate = async (filter, data) => {
-  let { emailid } = filter;
-  const {
+const findById = async (id) => {
+  const [rows, fields] = await pool.query("select * from role where id = ?", [
     id,
-    first_name,
-    last_name,
-    username,
-    password,
-    role_id,
-    company_name,
-    phone,
-    address,
-    city,
-    state,
-    country,
-    zip,
-    updated_by,
-  } = data;
-  const sql = `update user set 
-   ${first_name ? `first_name ='${first_name}',` : ""}
-   ${last_name ? `last_name ='${last_name}',` : ""}
-   ${username ? `username ='${username}',` : ""}
-   ${password ? `password = '${password}',` : ""} 
-   ${role_id ? `role_id = '${role_id}',` : ""}
-   ${company_name ? `company_name = '${company_name}',` : ""}
-   ${phone ? `phone = '${phone}',` : ""}
-   ${address ? `address = '${address}',` : ""}
-   ${city ? `city = '${city}',` : ""}
-   ${state ? `state = '${state}',` : ""}
-   ${country ? `country = '${state}',` : ""}
-   ${zip ? `zip = '${zip}'` : ""}
-   updated_at = NOW()
-   where id =${id} ;`;
-  const [rows, fields] = await pool.query(sql);
+  ]);
+  return rows;
+};
+
+const findByIdAndUpdate = async (filter, data) => {
+  let { id } = filter;
+  console.log("data:::", data);
+  const { name, status } = data;
+  const sql = `update role set 
+  ${name ? `name = '${name}',` : ""}
+  ${status ? `status = '${status}',` : ""}
+  updated_at = NOW()
+  where id =${id} ;`;
+  console.log("sql:::", sql);
+  const [rows, fields] = await pool.query(sql, [name, status]);
   return rows;
 };
 
 const findAll = async (Query) => {
-  const { id, username, email } = Query;
-  const sql = `select * from user where id is not null ${
-    username ? `and username="${username}"` : ""
-  } ${email ? `and emailid="${email}"` : ""} ${id ? ` and id=${id}` : ""};`;
-  const [rows, fields] = await pool.query(sql);
+  const { id, name, status } = Query;
+  const sql = `select * from role where id is not null ${
+    name ? `and name="${name}"` : ""
+  } ${status ? `and status="${status}"` : ""} ${id ? ` and id=${id}` : ""};`;
+  const [rows] = await pool.query(sql);
+  return rows;
+};
+
+const insertOne = async (data) => {
+  const { name, status } = data;
+  const sql = "insert into role (name,status) values (?,?);";
+  const [rows, fields] = await pool.query(sql, [name, status]);
   return rows;
 };
 
 const deleteOne = async (id) => {
-  const sql = "DELETE FROM user WHERE id = ?;";
+  const sql = "DELETE FROM role WHERE id = ?;";
   const [rows, fields] = await pool.query(sql, [id]);
   return rows;
 };
 
 export default {
-  findByEmail,
-  find,
+  findByName,
+  findById,
   insertOne,
-  findByEmailAndUpdate,
+  findByIdAndUpdate,
   findAll,
   deleteOne,
 };

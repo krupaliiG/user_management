@@ -46,7 +46,7 @@ const findByIdAndUpdate = async (filter, data) => {
 
 const findAll = async (Query) => {
   const { issue, status } = Query;
-  const sql = `select * from issue where id is not null ${
+  const sql = `select * from issues where id is not null ${
     issue ? `and issue="${issue}"` : ""
   } ${status ? `and status="${status}"` : ""}`;
   const [rows, fields] = await pool.query(sql);

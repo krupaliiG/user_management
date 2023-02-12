@@ -1,69 +1,60 @@
 import { roleService } from "../services";
-import { passwordOp } from "../utils";
-import { sendMail, randomPass } from "../utils";
 
-const addUpdateUser = async (request, response) => {
+const addUpdateRole = async (request, response) => {
   try {
-    const { id, emailid, username } = request.body;
+    console.log("req.body:::", request.body);
+    const { id, name } = request.body;
     if (id) {
-      const checkExistingUser = await roleService.findByEmail(emailid);
-      if (!checkExistingUser) throw new Error(`User not exist.`);
+      const checkExistingRole = await roleService.findById(id);
+      if (checkExistingRole && checkExistingRole.length === 0)
+        throw new Error(`Role does not exist.`);
+
       let filter = {
-          emailid,
+          id,
         },
         data = {
           ...request.body,
-          updated_by: request.currentUser.id,
-          updated_at: now(),
         };
-      const updateUser = await roleService.findByEmailAndUpdate(filter, data);
-      data &&
+
+      const updateProject = await roleService.findByIdAndUpdate(filter, data);
+      console.log("updateProject:::", updateProject);
+      updateProject &&
         response
           .status(200)
-          .send({ success: true, message: "User updated successfuly!" });
+          .send({ success: true, message: "Role Updated Successfully!" });
     } else {
-      const rows = await roleService.findByEmail(emailid);
+      const rows = await roleService.findByName(name);
       if (rows && rows.length) {
         response.status(400).send({
           success: false,
-          message:
-            "Email Already exists!Please use another email to create user!",
+          message: "Role Already exists!Please use another Role!",
         });
       } else {
-        const password = randomPass[0];
-        const hashedPassword = await passwordOp.hashPassword(password);
         const obj = {
           ...request.body,
-          password: hashedPassword,
-          created_by: request.currentUser.id,
-          updated_by: request.currentUser.id,
         };
         const data = await roleService.insertOne(obj);
-
-        let subject = "Welcome On Board!";
-        let html = `<p><b>Login Details: </b></p></br>
-            <p>Welcome <strong>${username}</strong></p></br>
-            <p>Your Password Is:<strong>${password}</strong></p>`;
-        sendMail(emailid, subject, html);
+        console.log("data in role:::", data);
 
         data &&
+          data.affectedRows === 1 &&
           response
             .status(200)
-            .send({ success: true, message: "User created successfuly!" });
+            .send({ success: true, message: "New Role Added Successfully!" });
       }
     }
   } catch (error) {
+    console.log("error:::", error);
     response.status(400).send({ success: false, message: error.message });
   }
 };
 
-const getAllUsers = async (request, response) => {
+const getAllRole = async (request, response) => {
   try {
-    let { id, username, email } = request.query;
+    let { name, status } = request.query;
     let filterQuery = {
-      id,
-      username,
-      email,
+      name,
+      status,
     };
     let data = await roleService.findAll(filterQuery);
     response.status(200).send({ success: true, data });
@@ -72,7 +63,7 @@ const getAllUsers = async (request, response) => {
   }
 };
 
-const deleteUser = async (request, response) => {
+const deleteRole = async (request, response) => {
   try {
     const { id } = request.query;
     if (!id) throw new Error("Please pass valid Id to delete!");
@@ -80,14 +71,10 @@ const deleteUser = async (request, response) => {
     const data = await roleService.deleteOne(id);
     response
       .status(200)
-      .send({ success: true, message: "User deleted Successfullly!" });
+      .send({ success: true, message: "Role deleted Successfully!" });
   } catch (error) {
     response.status(400).send({ success: false, message: error.message });
   }
 };
 
-export default {
-  addUpdateUser,
-  getAllUsers,
-  deleteUser,
-};
+export default { addUpdateRole, getAllRole, deleteRole };

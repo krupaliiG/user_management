@@ -9,14 +9,13 @@ import { validationSchema } from "../joiSchema";
 export default express
   .Router()
   .post(
-    INTERNAL_LINKS.ROLE.CREATE_USER,
+    INTERNAL_LINKS.ROLE.ADD_ROLE,
     authentication,
-    validationSchema.createUserSchema,
-    roleController.addUpdateUser
+    roleController.addUpdateRole
   )
-  .get(INTERNAL_LINKS.ROLE.GET_USER, authentication, roleController.getAllUsers)
+  .get(INTERNAL_LINKS.ROLE.GET_ROLE, authentication, roleController.getAllRole)
   .delete(
-    INTERNAL_LINKS.ROLE.DELETE_USER,
+    INTERNAL_LINKS.ROLE.DELETE_ROLE,
     authentication,
-    roleController.deleteUser
+    roleController.deleteRole
   );

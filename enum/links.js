@@ -7,12 +7,15 @@ export default {
     LOGIN: "/login",
     CHANGE_PASSWORD: "/changePassword",
     FORGET_PASSWORD: "/forgetPassword",
-  },
-  ROLE: {
-    BASE_URL: "/api/v1/role",
     CREATE_USER: "/addUpdateUser",
     GET_USER: "/getAllUser",
     DELETE_USER: "/deleteUser",
+  },
+  ROLE: {
+    BASE_URL: "/api/v1/role",
+    ADD_ROLE: "/addUpdateRole",
+    GET_ROLE: "/getRole",
+    DELETE_ROLE: "/deleteRole",
   },
   PROJECT: {
     BASE_URL: "/api/v1/project",
@@ -37,5 +40,11 @@ export default {
     DELETE_ISSUE: "/deleteIssue",
     ASSIGN_TEAM_TO_ISSUE: "/assignTeamToIssue",
     UPDATE_HOUR: "/updateHour",
+  },
+  MEDIA: {
+    BASE_URL: "/api/v1/media",
+    POST_MEDIA: "/postMedia",
+    GET_MEDIA: "/getMedia",
+    REMOVE_MEDIA: "/removeMedia",
   },
 };

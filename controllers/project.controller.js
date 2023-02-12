@@ -10,7 +10,7 @@ const addUpdateProject = async (request, response) => {
     const { id, projectname, status, team_id } = request.body;
     console.log("request.currentUser:::", request.currentUser);
     if (id) {
-      const checkExistingProject = await projectService.findByName(projectname);
+      const checkExistingProject = await projectService.findById(id);
       if (checkExistingProject && checkExistingProject.length === 0)
         throw new Error(`Project does not exist.`);
       console.log("checkExistingProject:::", checkExistingProject);
